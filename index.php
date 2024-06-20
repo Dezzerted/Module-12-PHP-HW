@@ -48,158 +48,95 @@ $example_persons_array = [
 
 echo 'Задание 1. Разбиение и объединение ФИО';
 echo '<br/>';
-echo '<br/>';
 
 function getFullNameFromParts ($surename, $name, $patronomyc) {
     return $surename . ' ' . $name . ' ' . $patronomyc;
 };
-
 echo getFullNameFromParts ('Иванов', 'Иван', 'Иванович');
 
-echo '<br/>';
-echo '<br/>';
-
-function getPartsFromFullname ($array) {
+function getPartsFromFullname ($string) {
     $arrayForCombination = [
         'surename',
         'name',
         'patronomyc'
     ];
-    foreach ($array as $person) {
-        $breakName = (explode(' ', $person['fullname']));
+        $breakName = (explode(' ', $string));
         $newArray = array_combine($arrayForCombination, $breakName);
-        unset($person);
-        echo "<pre>";
-        print_r($newArray);
-        echo "</pre>";
-        }
+        return $newArray;
     };
+echo "<pre>";
+print_r(getPartsFromFullname('Степанова Наталья Степановна'));
+echo "</pre>";
 
-getPartsFromFullname($example_persons_array);
-
-echo '<br/>';
 echo 'Задание 2. Сокращение ФИО';
 echo '<br/>';
-echo '<br/>';
 
-function getShortName ($array) {
-    foreach ($array as $person) {
-    $breakName = (explode(' ', $person['fullname']));
-    unset($person);
-    $onlyName = $breakName[1];
-    $onlySurename = mb_substr($breakName[0], 0, 1);
-    $namePlusShortSurename = $onlyName . ' ' . $onlySurename . '.';
-
-    echo $namePlusShortSurename;
-    echo ', ';
-    }
+function getShortName ($string) {
+    $breakName = getPartsFromFullname($string);
+    $shortName = $breakName['name'] . ' ' . mb_substr($breakName['surename'], 0, 1) . '.';
+    return $shortName;
 };
+echo getShortName ('Пащенко Владимир Александрович');
 
-getShortName ($example_persons_array);
-
-echo '<br/>';
 echo '<br/>';
 echo '<br/>';
 echo 'Задание 3. Функция определения пола по ФИО';
 echo '<br/>';
-echo '<br/>';
 
-function getGenderFromName ($array) {
-    foreach ($array as $person) {
-        $breakName = (explode(' ', $person['fullname']));
-      
-        $femPatrEnd = mb_substr($breakName[2], -3);
-        $bothNameEnd = mb_substr($breakName[1], -1);
-        $femSurEnd = mb_substr($breakName[0], -2);
-        $manPatrEnd = mb_substr($breakName[2], -2);
-        $manSurEnd = mb_substr($breakName[0], -1);
+function getGenderFromName ($string) {
+    $breakName = getPartsFromFullname($string);
+    
+    $femPatrEnd = mb_substr($breakName['patronomyc'], -3);
+    $bothNameEnd = mb_substr($breakName['name'], -1);
+    $femSurEnd = mb_substr($breakName['surename'], -2);
+    $manPatrEnd = mb_substr($breakName['patronomyc'], -2);
+    $manSurEnd = mb_substr($breakName['surename'], -1);
 
-        $initialGenderValue = 0;
+    $initialGenderValue = 0;
 
-        if($femPatrEnd === 'вна') {
-            $initialGenderValue -= 1;
-        };
-        if($femSurEnd === 'ва') {
-            $initialGenderValue -= 1;
-        };
-        if($manPatrEnd === 'ич') {
-            $initialGenderValue += 1;
-        };
-        if($manSurEnd === 'в') {
-            $initialGenderValue += 1;
-        };
+    if($femPatrEnd === 'вна') {
+        $initialGenderValue -= 1;
+    };
+    if($femSurEnd === 'ва') {
+        $initialGenderValue -= 1;
+    };
+    if($manPatrEnd === 'ич') {
+        $initialGenderValue += 1;
+    };
+    if($manSurEnd === 'в') {
+        $initialGenderValue += 1;
+    };
 
-        if($bothNameEnd === 'а') {
-            $initialGenderValue -= 1;
-        } elseif ($bothNameEnd === 'н'){
-            $initialGenderValue += 1;
-        } elseif ($bothNameEnd === 'й'){
-            $initialGenderValue += 1;
-        };
+    if($bothNameEnd === 'а') {
+        $initialGenderValue -= 1;
+    } elseif ($bothNameEnd === 'н'){
+        $initialGenderValue += 1;
+    } elseif ($bothNameEnd === 'й'){
+        $initialGenderValue += 1;
+    };
 
-        if($initialGenderValue > 0){
-            echo 'Пол мужской';
-            echo '<br/>';
-        } elseif($initialGenderValue < 0){
-            echo 'Пол женский';
-            echo '<br/>';
-        } else {
-            echo 'Пол неопределён';
-            echo '<br/>';
-        }
+    if($initialGenderValue > 0){
+        $resultG = 'Мужской пол';
+        return $resultG;
+    } elseif($initialGenderValue < 0){
+        $resultG = 'Женский пол';
+        return $resultG;
+    } else {
+        $resultG = 'Неопределённый пол';
+        return $resultG;
     }
 };
-    
-getGenderFromName ($example_persons_array);
+echo getGenderFromName ('Громов Александр Иванович');
 
 echo '<br/>';
 echo '<br/>';
 echo 'Задание 4. Определение возрастно-полового состава';
-echo '<br/>';
 
 function getGenderDescription ($array) {
     foreach ($array as $person) {
-        $breakName = explode(' ', $person['fullname']);
-        
-        $femPatrEnd = mb_substr($breakName[2], -3);
-        $bothNameEnd = mb_substr($breakName[1], -1);
-        $femSurEnd = mb_substr($breakName[0], -2);
-        $manPatrEnd = mb_substr($breakName[2], -2);
-        $manSurEnd = mb_substr($breakName[0], -1);
-
-        $initialGenderValue = 0;
-
-        if($femPatrEnd === 'вна') {
-            $initialGenderValue -= 1;
-        };
-        if($femSurEnd === 'ва') {
-            $initialGenderValue -= 1;
-        };
-        if($manPatrEnd === 'ич') {
-            $initialGenderValue += 1;
-        };
-        if($manSurEnd === 'в') {
-            $initialGenderValue += 1;
-        };
-
-        if($bothNameEnd === 'а') {
-            $initialGenderValue -= 1;
-        } elseif ($bothNameEnd === 'н'){
-            $initialGenderValue += 1;
-        } elseif ($bothNameEnd === 'й'){
-            $initialGenderValue += 1;
-        };
-
-        if($initialGenderValue > 0){
-            $resultG = 'Мужской пол';
-        } elseif($initialGenderValue < 0){
-            $resultG = 'Женский пол';
-        } else {
-            $resultG = 'Неопределённый пол';
-        }
-
-        $arrayForGen[] = $resultG;
-    }
+        $breakName = getGenderFromName($person['fullname']);
+        $arrayForGen[] = $breakName;
+    };
 
     $arrayForGenLength = count($arrayForGen);
 
@@ -211,23 +148,11 @@ function getGenderDescription ($array) {
     $femGenArrLength = count($femGenArr);
     $undefGenArrLength = count($undefGenArr);
 
-    echo '<br/>';
-    echo 'Гендерный состав аудитории:';
-    echo '<br/>';
-    echo '--------------------------------------';
-    echo '<br/>';
-    echo 'Мужчины -' . ' ' . round($manGenArrLength / $arrayForGenLength * 100, 1) . '%';
-    echo '<br/>';
-    echo '<br/>';
-    echo 'Женщины -' . ' ' . round($femGenArrLength / $arrayForGenLength * 100, 1) . '%';
-    echo '<br/>';
-    echo '<br/>';
-    echo 'Не удалось определить -' . ' ' . round($undefGenArrLength / $arrayForGenLength * 100, 1) . '%';
+    $answer = '<br/>' . 'Гендерный состав аудитории:' . '<br/>' . '--------------------------------------' . '<br/>' . 'Мужчины -' . ' ' . round($manGenArrLength / $arrayForGenLength * 100, 1) . '%' . '<br/>' . '<br/>' . 'Женщины -' . ' ' . round($femGenArrLength / $arrayForGenLength * 100, 1) . '%' . '<br/>' . '<br/>' . 'Не удалось определить -' . ' ' . round($undefGenArrLength / $arrayForGenLength * 100, 1) . '%';
+    return $answer;
 };
+echo getGenderDescription ($example_persons_array);
 
-getGenderDescription ($example_persons_array);
-
-echo '<br/>';
 echo '<br/>';
 echo '<br/>';
 echo 'Задание 5. Идеальный подбор пары';
@@ -238,114 +163,31 @@ function getPerfectPartner ($surename, $name, $patronomyc, $array) {
     //Обрабатываем ФИО, введенные в аргументы (не из массива):
     //приводим к регистру, сокращаем, вычисляем пол.
 
-    $inputName = $surename . ' ' . $name . ' ' . $patronomyc;
+    $inputName = getFullNameFromParts ($surename, $name, $patronomyc);
     $inputNameConvCase = mb_convert_case($inputName, MB_CASE_TITLE_SIMPLE);
-    $explodeName = explode(' ', $inputNameConvCase);
-    $shortInputName = $explodeName[1] . ' ' . mb_substr($explodeName[0], 0, 1) . '.';
-
-    $femPatrEnd = mb_substr($explodeName[2], -3);
-    $bothNameEnd = mb_substr($explodeName[1], -1);
-    $femSurEnd = mb_substr($explodeName[0], -2);
-    $manPatrEnd = mb_substr($explodeName[2], -2);
-    $manSurEnd = mb_substr($explodeName[0], -1);
-
-    $initGenVal = 0;
-
-    if($femPatrEnd === 'вна') {
-        $initGenVal -= 1;
-    };
-    if($femSurEnd === 'ва') {
-        $initGenVal -= 1;
-    };
-    if($manPatrEnd === 'ич') {
-        $initGenVal += 1;
-    };
-    if($manSurEnd === 'в') {
-        $initGenVal += 1;
-    };
-
-    if($bothNameEnd === 'а') {
-        $initGenVal -= 1;
-    } elseif ($bothNameEnd === 'н'){
-        $initGenVal += 1;
-    } elseif ($bothNameEnd === 'й'){
-        $initGenVal += 1;
-    };
-
-    if($initGenVal > 0){
-        $genderForInputName = 'Мужской пол';
-    } elseif($initGenVal < 0){
-        $genderForInputName = 'Женский пол';
-    } else {
-        $genderForInputName = 'Неопределённый пол';
-    };
+    $inputNameGender = getGenderFromName ($inputNameConvCase);
+    $shortInputName = getShortName ($inputNameConvCase);
 
     //Обрабатываем ФИО из массива:
     //приводим к регистру, сокращаем, вычисляем пол.
 
     $inputArrLeng = count($array);
-    $nameFromArr = explode(' ', $array[rand(0, $inputArrLeng - 1)]['fullname']);
-    $shortArrName = $nameFromArr[1] . ' ' . mb_substr($nameFromArr[0], 0, 1) . '.';
+    $nameFromArray = $array[rand(0, $inputArrLeng - 1)]['fullname'];
 
-    $femPatrEndArr = mb_substr($nameFromArr[2], -3);
-    $bothNameEndArr = mb_substr($nameFromArr[1], -1);
-    $femSurEndArr = mb_substr($nameFromArr[0], -2);
-    $manPatrEndArr = mb_substr($nameFromArr[2], -2);
-    $manSurEndArr = mb_substr($nameFromArr[0], -1);
+    $arrayNameGender = getGenderFromName ($nameFromArray);
+    $shortArrName = getShortName ($nameFromArray);
 
-    $initGenValArr = 0;
-
-    if($femPatrEndArr === 'вна') {
-        $initGenValArr -= 1;
-    };
-    if($femSurEndArr === 'ва') {
-        $initGenValArr -= 1;
-    };
-    if($manPatrEndArr === 'ич') {
-        $initGenValArr += 1;
-    };
-    if($manSurEndArr === 'в') {
-        $initGenValArr += 1;
-    };
-
-    if($bothNameEndArr === 'а') {
-        $initGenValArr -= 1;
-    } elseif ($bothNameEndArr === 'н'){
-        $initGenValArr += 1;
-    } elseif ($bothNameEndArr === 'й'){
-        $initGenValArr += 1;
-    };
-
-    if($initGenValArr > 0){
-        $genderForArrayName = 'Мужской пол';
-    } elseif($initGenValArr < 0){
-        $genderForArrayName = 'Женский пол';
-    } else {
-        $genderForArrayName = 'Неопределённый пол';
-    };
-
-    if ($genderForInputName === $genderForArrayName) {
-        echo '<br/>';
-        echo 'Не получилось определить пару.';
-        echo '<br/>';
-        echo 'Перезагрузите страницу.';
-        echo '<br/>';
+    if ($inputNameGender === $arrayNameGender) {
+        $answer = 'Не получилось определить пару.' . '<br/>' . 'Перезагрузите страницу.';
+        return $answer;
     } 
-    elseif ($genderForInputName === 'Неопределённый пол' || $genderForArrayName === 'Неопределённый пол') {
-        echo '<br/>';
-        echo 'Не получилось определить пару.';
-        echo '<br/>';
-        echo 'Перезагрузите страницу.';
-        echo '<br/>';
+    elseif ($inputNameGender === 'Неопределённый пол' || $arrayNameGender === 'Неопределённый пол') {
+        $answer = 'Не получилось определить пару.' . '<br/>' . 'Перезагрузите страницу.';
+        return $answer;
     }
-    else {
-    echo '<br/>';
-    echo $shortArrName . ' ' . ' + ' . $shortInputName . ' ' . ' = ';
-    echo '<br/>';
-    echo "\u{2661}" . ' ' . 'Идеально на' . ' ' . rand(50, 100) . '%' . ' ' .  "\u{2661}";
-    echo '<br/>';
+    else {  
+        $answer = $shortArrName . ' ' . ' + ' . $shortInputName . ' ' . ' = ' . '<br/>' . "\u{2661}" . ' ' . 'Идеально на' . ' ' . number_format((float)(rand(5000, 10000)/100), 2, '.', '') . '%' . ' ' .  "\u{2661}";
+        return $answer;
     }
-
-}
-
-getPerfectPartner ('Ангелинова', 'Ангелина', 'Жоровна', $example_persons_array);
+};
+echo getPerfectPartner ('Антонова', 'Анна', 'Антоновна', $example_persons_array);
