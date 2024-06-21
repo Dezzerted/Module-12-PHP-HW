@@ -46,9 +46,6 @@ $example_persons_array = [
     ],
 ];
 
-echo 'Задание 1. Разбиение и объединение ФИО';
-echo '<br/>';
-
 function getFullNameFromParts ($surename, $name, $patronomyc) {
     return $surename . ' ' . $name . ' ' . $patronomyc;
 };
@@ -64,12 +61,7 @@ function getPartsFromFullname ($string) {
         $newArray = array_combine($arrayForCombination, $breakName);
         return $newArray;
     };
-echo "<pre>";
 print_r(getPartsFromFullname('Степанова Наталья Степановна'));
-echo "</pre>";
-
-echo 'Задание 2. Сокращение ФИО';
-echo '<br/>';
 
 function getShortName ($string) {
     $breakName = getPartsFromFullname($string);
@@ -77,11 +69,6 @@ function getShortName ($string) {
     return $shortName;
 };
 echo getShortName ('Пащенко Владимир Александрович');
-
-echo '<br/>';
-echo '<br/>';
-echo 'Задание 3. Функция определения пола по ФИО';
-echo '<br/>';
 
 function getGenderFromName ($string) {
     $breakName = getPartsFromFullname($string);
@@ -128,10 +115,6 @@ function getGenderFromName ($string) {
 };
 echo getGenderFromName ('Громов Александр Иванович');
 
-echo '<br/>';
-echo '<br/>';
-echo 'Задание 4. Определение возрастно-полового состава';
-
 function getGenderDescription ($array) {
     foreach ($array as $person) {
         $breakName = getGenderFromName($person['fullname']);
@@ -148,46 +131,53 @@ function getGenderDescription ($array) {
     $femGenArrLength = count($femGenArr);
     $undefGenArrLength = count($undefGenArr);
 
-    $answer = '<br/>' . 'Гендерный состав аудитории:' . '<br/>' . '--------------------------------------' . '<br/>' . 'Мужчины -' . ' ' . round($manGenArrLength / $arrayForGenLength * 100, 1) . '%' . '<br/>' . '<br/>' . 'Женщины -' . ' ' . round($femGenArrLength / $arrayForGenLength * 100, 1) . '%' . '<br/>' . '<br/>' . 'Не удалось определить -' . ' ' . round($undefGenArrLength / $arrayForGenLength * 100, 1) . '%';
-    return $answer;
+    $roundMen = round($manGenArrLength / $arrayForGenLength * 100, 1);
+    $roundWomen = round($undefGenArrLength / $arrayForGenLength * 100, 1);
+    $roundUndef = round($undefGenArrLength / $arrayForGenLength * 100, 1);
+
+    $answer = <<<HEREDOC
+    Гендерный состав аудитории:
+    --------------------------------------
+    Мужчины - $roundMen %
+    Женщины - $roundWomen %
+    Не удалось определить - $roundUndef %
+    HEREDOC;
+    return nl2br($answer);
 };
 echo getGenderDescription ($example_persons_array);
 
-echo '<br/>';
-echo '<br/>';
-echo 'Задание 5. Идеальный подбор пары';
-echo '<br/>';
-
 function getPerfectPartner ($surename, $name, $patronomyc, $array) {
-
     //Обрабатываем ФИО, введенные в аргументы (не из массива):
-    //приводим к регистру, сокращаем, вычисляем пол.
-
     $inputName = getFullNameFromParts ($surename, $name, $patronomyc);
     $inputNameConvCase = mb_convert_case($inputName, MB_CASE_TITLE_SIMPLE);
     $inputNameGender = getGenderFromName ($inputNameConvCase);
     $shortInputName = getShortName ($inputNameConvCase);
 
     //Обрабатываем ФИО из массива:
-    //приводим к регистру, сокращаем, вычисляем пол.
-
     $inputArrLeng = count($array);
     $nameFromArray = $array[rand(0, $inputArrLeng - 1)]['fullname'];
 
     $arrayNameGender = getGenderFromName ($nameFromArray);
     $shortArrName = getShortName ($nameFromArray);
 
-    if ($inputNameGender === $arrayNameGender) {
-        $answer = 'Не получилось определить пару.' . '<br/>' . 'Перезагрузите страницу.';
-        return $answer;
+    while($inputNameGender === $arrayNameGender){
+        $inputArrLeng = count($array);
+        $nameFromArray = $array[rand(0, $inputArrLeng - 1)]['fullname'];
+
+        $arrayNameGender = getGenderFromName ($nameFromArray);
+        $shortArrName = getShortName ($nameFromArray);
     } 
-    elseif ($inputNameGender === 'Неопределённый пол' || $arrayNameGender === 'Неопределённый пол') {
-        $answer = 'Не получилось определить пару.' . '<br/>' . 'Перезагрузите страницу.';
+    if ($inputNameGender === 'Неопределённый пол' || $arrayNameGender === 'Неопределённый пол') {
+        $answer = "\u{2639} Извините, программа дала сбой, попробуйте заново \u{2639}";
         return $answer;
     }
     else {  
-        $answer = $shortArrName . ' ' . ' + ' . $shortInputName . ' ' . ' = ' . '<br/>' . "\u{2661}" . ' ' . 'Идеально на' . ' ' . number_format((float)(rand(5000, 10000)/100), 2, '.', '') . '%' . ' ' .  "\u{2661}";
-        return $answer;
+        $randNum = number_format((float)(rand(5000, 10000)/100), 2, '.', '');
+        $answer = <<<HEREDOC
+        $shortArrName + $shortInputName = 
+        \u{2661} Идеально на $randNum % \u{2661}
+        HEREDOC;
+        return nl2br($answer);
     }
 };
 echo getPerfectPartner ('Антонова', 'Анна', 'Антоновна', $example_persons_array);
