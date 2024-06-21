@@ -132,7 +132,7 @@ function getGenderDescription ($array) {
     $undefGenArrLength = count($undefGenArr);
 
     $roundMen = round($manGenArrLength / $arrayForGenLength * 100, 1);
-    $roundWomen = round($undefGenArrLength / $arrayForGenLength * 100, 1);
+    $roundWomen = round($femGenArrLength / $arrayForGenLength * 100, 1);
     $roundUndef = round($undefGenArrLength / $arrayForGenLength * 100, 1);
 
     $answer = <<<HEREDOC
